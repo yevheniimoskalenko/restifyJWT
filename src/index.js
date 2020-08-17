@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const User = require('./model/user.modul');
 const rJWT = require('restify-jwt-community');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 const { compareSync,genSaltSync, hashSync }= require('bcrypt-nodejs'); 
 require('dotenv').config();
@@ -27,6 +28,17 @@ app.post('/login', async(req,res) =>{
     res.send(e);
   }
 });
+app.get('/post/:id',  rJWT({ secret: process.env.secret }),async (req,res)=> {
+  const { id } = req.params;
+	
+
+  await axios({ method:'get',
+    url: `https://jsonplaceholder.typicode.com/posts/${id}` }).then(result =>{
+    return res.json(result.data);
+  });
+
+});
+
 app.use(restify.plugins.queryParser({
   mapParams: true
 }));
